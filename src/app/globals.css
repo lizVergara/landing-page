@@ -2,32 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+input {
+  @apply caret-secondary;
+}
+.custom-input-container {
+  @apply w-full border-gray-300 bg-input-bg px-4 py-2 rounded-lg shadow-lg transition duration-200 ease-in-out;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.custom-label {
+  @apply text-base text-white font-light;
+}
+
+.custom-input {
+  @apply block w-full focus:outline-none bg-input-bg text-white text-lg placeholder-gray-500;
+}
+
+.custom-input-container:focus-within {
+  @apply bg-gray-700 border-none;
+}
+
+.custom-input-container:focus-within .custom-input {
+  @apply bg-gray-700;
+}
+
+.custom-input::placeholder {
+  @apply text-gray-500;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  @apply bg-custom-bg text-white;
 }
