@@ -13,6 +13,12 @@ module.exports = {
         "input-bg": "#272A33",
         secondary: "#9396A5",
         "button-color": "#FCB115",
+        "modal-bg": "#435260",
+        "white-text": "#e4e2e2",
+        light: "#d7dde3",
+      },
+      animation: {
+        spin: "spin 1s linear infinite",
       },
     },
   },

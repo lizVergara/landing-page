@@ -10,7 +10,7 @@ import {
   setPhoneNumber,
   setSameBillingInfo,
 } from "../features/profile/profileSlice";
-import InboxImage from "../../../public/inboxSvg";
+import InboxImage from "../../../public/icons/inboxSvg";
 import { useState } from "react";
 import ModalWeather from "./ModalWeather";
 

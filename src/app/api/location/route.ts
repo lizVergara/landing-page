@@ -17,14 +17,18 @@ export async function GET(req: NextRequest) {
     const response = await fetch(
       `https://geocoding-api.open-meteo.com/v1/search?name=${query}`
     );
+
     const result = await response.json();
+    if (!result.results || result.results.length === 0) {
+      return NextResponse.json({ data: "No locations found" }, { status: 200 });
+    }
     const locations: Location[] = result.results.map((item: any) => ({
       id: item.id,
       name: item.name,
       latitude: item.latitude,
       longitude: item.longitude,
       elevation: item.elevation,
-      country_code: item.country_code,
+      country_code: item.country_code.toLowerCase(),
       country_id: item.country_id,
       country: item.country,
       admin1: item.admin1,
@@ -33,6 +37,7 @@ export async function GET(req: NextRequest) {
     }));
     return NextResponse.json(locations);
   } catch (error) {
+    console.error("Error fetching location data:", error);
     return NextResponse.json(
       { error: "Failed to fetch data" },
       { status: 500 }
