@@ -9,14 +9,21 @@ import {
   setEmail,
   setPhoneNumber,
   setSameBillingInfo,
+  selectLocation,
+  selectProfile,
 } from "../features/profile/profileSlice";
 import InboxImage from "../../../public/icons/inboxSvg";
+import directInbox from "../../../public/images/direct-inbox.png";
 import { useState } from "react";
 import ModalWeather from "./ModalWeather";
+import { useAppSelector } from "../store/hooks";
+import LocationIcon from "../../../public/icons/locationSvg";
 
 const ProfileForm: React.FC = () => {
   const dispatch = useDispatch();
-  const profile = useSelector((state: RootState) => state.profile);
+  const profile = useAppSelector(selectProfile);
+  const location = useAppSelector(selectLocation);
+
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar el modal
 
   const handleOpenModal = () => {
@@ -124,17 +131,20 @@ const ProfileForm: React.FC = () => {
                 />
               </div>
               <div className="flex flex-auto space-x-2">
-                {/* <div
-                className="w-1/6 border-gray-300 p-4 rounded-lg shadow-lg transition duration-200 ease-in-out  flex items-center justify-center bg-input-bg"
-                onClick={() => document.getElementById("telefono")?.focus()}
-              >
-              </div> */}
-                <button
-                  onClick={handleOpenModal}
-                  className="w-1/6 border-gray-300 p-4 rounded-lg shadow-lg  hover:bg-gray-800 justify-center bg-input-bg"
-                ></button>
                 <div
-                  className="custom-input-container "
+                  onClick={handleOpenModal}
+                  className=" border-gray-300 p-2 md:p-3 rounded-lg shadow-lg hover:bg-gray-800 justify-center bg-input-bg flex items-center"
+                >
+                  {location ? (
+                    <img src={location.image} className="h-10 w-10" />
+                  ) : (
+                    <LocationIcon />
+                  )}
+                  {/* <LocationIcon /> */}
+                </div>
+
+                <div
+                  className="custom-input-container flex-grow"
                   onClick={() => document.getElementById("telefono")?.focus()}
                 >
                   <label className="custom-label">Número de teléfono</label>
@@ -148,20 +158,21 @@ const ProfileForm: React.FC = () => {
                   />
                 </div>
               </div>
+
               <div className="w-full px-1">
                 <h2 className="text-secondary font-normal">
                   Carga hasta 4 imágenes para tu perfil
                 </h2>
-                <div className="bg-input-bg p-4 rounded-lg mt-2 grid grid-cols-11 gap-4">
+                <div className="bg-input-bg p-4 rounded-lg mt-2 grid grid-cols-10 gap-4">
                   <div className="col-span-1 flex items-center justify-center">
-                    <InboxImage className="fill-white h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 xl:h-14 xl:w-14" />
+                    <InboxImage />
                   </div>
-                  <div className="col-span-10">
-                    <h3 className="font-normal text-white text-sm md:text-base lg:text-lg xl:text-xl">
+                  <div className="col-span-8">
+                    <h3 className="font-normal text-white-text text-sm md:text-base lg:text-lg xl:text-xl">
                       Haz clic o arrastra los archivos a esta área para
                       cargarlos
                     </h3>
-                    <p className="font-light text-white text-xs md:text-sm lg:text-base xl:text-lg">
+                    <p className="font-light text-white-text text-xs md:text-sm lg:text-base xl:text-lg">
                       JPG, PNG, Tiff, hasta 2 mb
                     </p>
                   </div>
@@ -174,9 +185,9 @@ const ProfileForm: React.FC = () => {
                   onChange={(e) =>
                     dispatch(setSameBillingInfo(e.target.checked))
                   }
-                  className="form-checkbox h-4 w-4 text-button-color transition duration-150 ease-in-out"
+                  className="form-checkbox h-4 w-4 accent-button-color transition duration-150 ease-in-out"
                 />
-                <label className="ml-2 text-white font-medium">
+                <label className="ml-2 text-white-text font-medium">
                   Usar los mismos datos para la facturación
                 </label>
               </div>
@@ -184,6 +195,7 @@ const ProfileForm: React.FC = () => {
             <button
               type="submit"
               className="mt-6 w-full inline-flex justify-center py-4 px-4 border border-transparent shadow-sm text-sm font-bold rounded-md text-black bg-button-color hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+              onClick={handleSubmit}
             >
               Enviar
             </button>

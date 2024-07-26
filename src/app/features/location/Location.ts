@@ -10,4 +10,5 @@ export interface Location {
   admin1: string;
   admin2: string;
   admin3: string;
+  image: string;
 }

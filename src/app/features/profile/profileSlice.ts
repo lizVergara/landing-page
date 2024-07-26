@@ -1,5 +1,6 @@
-// src/app/features/profile/profileSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Location } from "../location/Location";
+import { RootState } from "@/app/store";
 
 interface ProfileState {
   name: string;
@@ -9,6 +10,7 @@ interface ProfileState {
   email: string;
   phoneNumber: string;
   sameBillingInfo: boolean;
+  location: Location | null;
 }
 
 const initialState: ProfileState = {
@@ -19,6 +21,7 @@ const initialState: ProfileState = {
   email: "",
   phoneNumber: "",
   sameBillingInfo: false,
+  location: null,
 };
 
 const profileSlice = createSlice({
@@ -46,8 +49,14 @@ const profileSlice = createSlice({
     setSameBillingInfo: (state, action: PayloadAction<boolean>) => {
       state.sameBillingInfo = action.payload;
     },
+    setLocation: (state, action: PayloadAction<Location>) => {
+      console.log(action.payload);
+      state.location = action.payload;
+    },
   },
 });
+export const selectLocation = (state: RootState) => state.profile.location;
+export const selectProfile = (state: RootState) => state.profile;
 
 export const {
   setName,
@@ -57,6 +66,7 @@ export const {
   setEmail,
   setPhoneNumber,
   setSameBillingInfo,
+  setLocation,
 } = profileSlice.actions;
 
 export default profileSlice.reducer;

@@ -1,4 +1,3 @@
-// src/app/store/index.ts
 import { configureStore } from "@reduxjs/toolkit";
 import profileReducer from "../features/profile/profileSlice";
 

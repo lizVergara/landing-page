@@ -1,4 +1,3 @@
-// src/app/api/weather/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -12,14 +11,13 @@ export async function GET(req: NextRequest) {
       { status: 400 }
     );
   }
-  console.log("Fetching weather data for", { latitude, longitude });
 
   try {
     const response = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=celsius`
     );
     const weatherData = await response.json();
-    if (!weatherData.current_weather.temperature) {
+    if (!weatherData.current_weather) {
       return NextResponse.json({ data: "No weather found" }, { status: 200 });
     }
     const temperature = weatherData.current_weather.temperature;

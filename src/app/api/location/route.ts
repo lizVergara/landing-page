@@ -1,4 +1,3 @@
-// src/app/api/location/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { Location } from "../../features/location/Location";
 
@@ -34,6 +33,7 @@ export async function GET(req: NextRequest) {
       admin1: item.admin1,
       admin2: item.admin2,
       admin3: item.admin3,
+      image: `https://hatscripts.github.io/circle-flags/flags/${item.country_code.toLowerCase()}.svg`,
     }));
     return NextResponse.json(locations);
   } catch (error) {
