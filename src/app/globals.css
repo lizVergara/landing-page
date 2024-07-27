@@ -14,7 +14,7 @@ input {
 }
 
 .custom-input {
-  @apply block w-full focus:outline-none bg-input-bg text-white text-lg placeholder-gray-500;
+  @apply block w-full focus:outline-none bg-transparent text-white text-lg placeholder-gray-500;
 }
 
 .custom-input-container:focus-within {

@@ -4,10 +4,12 @@ const InboxSvg: React.FC = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
+    width={40}
+    height={40}
     viewBox="0 0 24 24"
     strokeWidth="1.5"
     stroke="white"
-    className="w-6 h-6 md:w-8 md:h-8"
+    // className="w-6 h-6 md:w-8 md:h-8"
   >
     <path
       strokeLinecap="round"

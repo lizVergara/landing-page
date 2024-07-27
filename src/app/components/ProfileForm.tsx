@@ -32,11 +32,12 @@ const ProfileForm: React.FC = () => {
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
-    const newImages = Array.from(e.target.files);
+    const file = e.target.files[0];
+    const newImages = Array.from([file]);
+    // const newImages = Array.from(e.target.files);
     if (images.length + newImages.length > 4) return;
 
     setLocalImages([...images, ...newImages]);
-    console.log(images);
   };
 
   const handleRemoveImage = (index: number) => {
@@ -56,12 +57,20 @@ const ProfileForm: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log(profile);
-    try {
-      const result = await createProfile(profile);
-      console.log(result);
-    } catch (error) {
-      console.error(error);
+    console.log(images);
+    const formData = new FormData();
+
+    if (images.length > 0) {
+      images.forEach((image) => {
+        formData.append(`image`, image);
+      });
     }
+    // try {
+    //   const result = await createProfile(profile);
+    //   console.log(result);
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
   return (
@@ -173,7 +182,7 @@ const ProfileForm: React.FC = () => {
                 >
                   <label className="custom-label">Número de teléfono</label>
                   <input
-                    id="cellphone"
+                    id="phone"
                     type="tel"
                     value={profile.phoneNumber}
                     onChange={(e) => dispatch(setPhoneNumber(e.target.value))}
@@ -192,6 +201,7 @@ const ProfileForm: React.FC = () => {
                   onChange={handleFileChange}
                 >
                   <input
+                    id="image"
                     type="file"
                     ref={inputRef}
                     className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
@@ -206,9 +216,9 @@ const ProfileForm: React.FC = () => {
                       Haz clic o arrastra los archivos a esta área para
                       cargarlos
                     </h3>
-                    <p className="font-light text-white-text text-xs md:text-sm lg:text-base xl:text-lg">
+                    <label className="text-gray-500  block w-full focus:outline-none  text-lg ">
                       JPG, PNG, Tiff, hasta 2 mb
-                    </p>
+                    </label>
                   </div>
                 </div>
                 {images.length >= 4 && (
@@ -216,30 +226,34 @@ const ProfileForm: React.FC = () => {
                     Ya tiene 4 imágenes
                   </p>
                 )}
-                <div className="mt-4">
-                  <h3 className="text-secondary font-normal mb-3">
-                    Imágenes cargadas
-                  </h3>
-                  <div className="border-2 border-white rounded-lg py-1 px-4">
-                    {images.map((image, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-between items-center mb-2"
-                      >
-                        <span className="text-white-text font-semibold text-xs">
-                          {image.name}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(index)}
-                          className="text-red-600 text-xs"
-                        >
-                          🗑️
-                        </button>
+                {images.length > 0 && (
+                  <div className="mt-4 ">
+                    <h3 className="text-secondary font-normal mb-3">
+                      Imágenes cargadas
+                    </h3>
+                    <div className="rounded-lg p-px bg-gradient-to-r  from-cyan-400 via-pink-500 via-purple-500 to-orange-500">
+                      <div className="bg-form-bg rounded-lg p-4">
+                        {images.map((image, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center mb-2"
+                          >
+                            <span className="text-white font-semibold text-xs">
+                              {image.name}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(index)}
+                              className="text-red-600 text-xs"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
               <div className="flex items-center">
                 <input
