@@ -48,7 +48,7 @@ const ModalWeather: React.FC<ModalWeatherProps> = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="text-white-text bg-transparent hover:bg-gray-200 hover:text-modal-bg rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+              className="text-white-text bg-transparent hover:bg-gray-200 hover:text-modal-bg rounded-lg text-sm w-4 h-4 ms-auto inline-flex justify-center items-center"
             >
               <CloseIcon />
             </button>

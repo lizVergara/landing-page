@@ -7,11 +7,11 @@ interface LocationListProps {
 }
 
 const LocationList: React.FC<LocationListProps> = ({ results, onSelect }) => (
-  <div className="pt-1 pb-4 px-4">
+  <div className="pt-1 pb-4  ">
     {results.map((location) => (
       <div
         key={location.id}
-        className="border-2 rounded-md border-gray-300 my-2 p-2 hover:bg-gray-800 hover:bg-opacity-50 hover:border-0"
+        className="border rounded-md border-gray-300 my-3 px-4 p-2 hover:bg-gray-800 hover:bg-opacity-50 hover:border-0"
         onClick={() => onSelect(location)}
       >
         <div className="flex pb-2 items-center">

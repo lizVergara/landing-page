@@ -1,19 +1,21 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Location } from "../location/Location";
 import { RootState } from "@/app/store";
+import { Profile } from "./Profile";
 
-interface ProfileState {
-  name: string;
-  lastName: string;
-  documentType: string;
-  document: string | null;
-  email: string;
-  phoneNumber: string;
-  sameBillingInfo: boolean;
-  location: Location | null;
-}
+// interface ProfileState {
+//   name: string;
+//   lastName: string;
+//   documentType: string;
+//   document: string | null;
+//   email: string;
+//   phoneNumber: string;
+//   sameBillingInfo: boolean;
+//   location: Location | null;
+//   // images: File[];
+// }
 
-const initialState: ProfileState = {
+const initialState: Profile = {
   name: "",
   lastName: "",
   documentType: "RUC",
@@ -22,6 +24,7 @@ const initialState: ProfileState = {
   phoneNumber: "",
   sameBillingInfo: false,
   location: null,
+  // images: [],
 };
 
 const profileSlice = createSlice({
@@ -53,8 +56,12 @@ const profileSlice = createSlice({
       console.log(action.payload);
       state.location = action.payload;
     },
+    // setImages: (state, action: PayloadAction<File[]>) => {
+    //   state.images = action.payload;
+    // },
   },
 });
+
 export const selectLocation = (state: RootState) => state.profile.location;
 export const selectProfile = (state: RootState) => state.profile;
 
@@ -67,6 +74,7 @@ export const {
   setPhoneNumber,
   setSameBillingInfo,
   setLocation,
+  // setImages,
 } = profileSlice.actions;
 
 export default profileSlice.reducer;

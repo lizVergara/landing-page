@@ -9,22 +9,41 @@ import {
   setEmail,
   setPhoneNumber,
   setSameBillingInfo,
+  // setImages,
   selectLocation,
   selectProfile,
 } from "../features/profile/profileSlice";
 import InboxImage from "../../../public/icons/inboxSvg";
-import directInbox from "../../../public/images/direct-inbox.png";
-import { useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import ModalWeather from "./ModalWeather";
 import { useAppSelector } from "../store/hooks";
 import LocationIcon from "../../../public/icons/locationSvg";
+import { createProfile } from "@/services/addUserService";
 
 const ProfileForm: React.FC = () => {
   const dispatch = useDispatch();
   const profile = useAppSelector(selectProfile);
   const location = useAppSelector(selectLocation);
 
-  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar el modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const [images, setLocalImages] = useState<File[]>([]);
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const newImages = Array.from(e.target.files);
+    if (images.length + newImages.length > 4) return;
+
+    setLocalImages([...images, ...newImages]);
+    console.log(images);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const updatedImages = images.filter((_, i) => i !== index);
+    setLocalImages(updatedImages);
+    // dispatch(setImages(updatedImages));
+  };
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -34,9 +53,15 @@ const ProfileForm: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log(profile);
+    try {
+      const result = await createProfile(profile);
+      console.log(result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -60,7 +85,7 @@ const ProfileForm: React.FC = () => {
               >
                 <label className="custom-label">Nombre</label>
                 <input
-                  id="nombre"
+                  id="name"
                   type="text"
                   value={profile.name}
                   onChange={(e) => dispatch(setName(e.target.value))}
@@ -93,11 +118,11 @@ const ProfileForm: React.FC = () => {
                   id="tipo-documento"
                   value={profile.documentType}
                   onChange={(e) => dispatch(setDocumentType(e.target.value))}
-                  className="custom-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-none focus:ring-none"
+                  className="custom-input mt-1 block w-full rounded-md text-secondary border-gray-300 shadow-sm focus:border-none focus:ring-none"
                 >
                   <option value="RUC">RUC</option>
-                  <option value="DNI">DNI</option>
-                  <option value="Pasaporte">Pasaporte</option>
+                  <option value="cedula">Cédula</option>
+                  <option value="pasaporte">Pasaporte</option>
                 </select>
               </div>
               <div
@@ -122,7 +147,7 @@ const ProfileForm: React.FC = () => {
               >
                 <label className="custom-label">Correo electrónico</label>
                 <input
-                  id="correo"
+                  id="email"
                   type="email"
                   value={profile.email}
                   onChange={(e) => dispatch(setEmail(e.target.value))}
@@ -140,7 +165,6 @@ const ProfileForm: React.FC = () => {
                   ) : (
                     <LocationIcon />
                   )}
-                  {/* <LocationIcon /> */}
                 </div>
 
                 <div
@@ -149,7 +173,7 @@ const ProfileForm: React.FC = () => {
                 >
                   <label className="custom-label">Número de teléfono</label>
                   <input
-                    id="telefono"
+                    id="cellphone"
                     type="tel"
                     value={profile.phoneNumber}
                     onChange={(e) => dispatch(setPhoneNumber(e.target.value))}
@@ -163,7 +187,17 @@ const ProfileForm: React.FC = () => {
                 <h2 className="text-secondary font-normal">
                   Carga hasta 4 imágenes para tu perfil
                 </h2>
-                <div className="bg-input-bg p-4 rounded-lg mt-2 grid grid-cols-10 gap-4">
+                <div
+                  className="relative bg-input-bg p-4 rounded-lg mt-2 grid grid-cols-10 gap-4 cursor-pointer"
+                  onChange={handleFileChange}
+                >
+                  <input
+                    type="file"
+                    ref={inputRef}
+                    className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                    multiple
+                    accept="image/*"
+                  />
                   <div className="col-span-1 flex items-center justify-center">
                     <InboxImage />
                   </div>
@@ -175,6 +209,35 @@ const ProfileForm: React.FC = () => {
                     <p className="font-light text-white-text text-xs md:text-sm lg:text-base xl:text-lg">
                       JPG, PNG, Tiff, hasta 2 mb
                     </p>
+                  </div>
+                </div>
+                {images.length >= 4 && (
+                  <p className="text-red-600 text-sm font-light">
+                    Ya tiene 4 imágenes
+                  </p>
+                )}
+                <div className="mt-4">
+                  <h3 className="text-secondary font-normal mb-3">
+                    Imágenes cargadas
+                  </h3>
+                  <div className="border-2 border-white rounded-lg py-1 px-4">
+                    {images.map((image, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center mb-2"
+                      >
+                        <span className="text-white-text font-semibold text-xs">
+                          {image.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="text-red-600 text-xs"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -202,9 +265,7 @@ const ProfileForm: React.FC = () => {
           </form>
         </div>
       </div>
-      {isModalOpen && (
-        <ModalWeather onClose={handleCloseModal} /> // Pasar la función para cerrar el modal
-      )}
+      {isModalOpen && <ModalWeather onClose={handleCloseModal} />}
     </>
   );
 };
