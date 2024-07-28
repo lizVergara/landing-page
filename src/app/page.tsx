@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import ProfileForm from "./components/ProfileForm";
+import ProfileForm from "./components/form/ProfileForm";
 
 const Home: React.FC = () => {
   const [showUpload, setShowUpload] = useState(false);

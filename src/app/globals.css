@@ -6,7 +6,7 @@ input {
   @apply caret-secondary;
 }
 .custom-input-container {
-  @apply w-full border-gray-300 bg-input-bg px-4 py-2 rounded-lg shadow-lg transition duration-200 ease-in-out;
+  @apply w-full border-gray-300 bg-input-bg px-4 py-2 rounded-lg shadow-lg transition duration-200 ease-in-out mt-7;
 }
 
 .custom-label {

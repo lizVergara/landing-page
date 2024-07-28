@@ -1,3 +1,5 @@
+import supabase from "../../utils/supabase";
+
 export async function getLocationsByName(name: string) {
   try {
     const response = await fetch(
@@ -25,5 +27,48 @@ export async function getLocationsByName(name: string) {
   } catch (error) {
     console.error("Error fetching location data:", error);
     return [];
+  }
+}
+
+export async function getOrCreateLocation(data: any) {
+  try {
+    const existedLocation = await getLocationByIdInDB(data.location_id);
+    if (existedLocation) {
+      return existedLocation;
+    }
+
+    const { data: locationData, error } = await supabase
+      .from("trd_location")
+      .insert(data)
+      .select();
+
+    if (error) {
+      console.error("Error from supabase while creating profile:", error);
+      return null;
+    }
+
+    return locationData[0];
+  } catch (error) {
+    console.error("Error creating profile:", error);
+    return null;
+  }
+}
+
+export async function getLocationByIdInDB(location_id: number) {
+  try {
+    const { data, error } = await supabase
+      .from("trd_location")
+      .select()
+      .eq("location_id", location_id);
+
+    if (error) {
+      console.error("Error fetching profile data:", error);
+      return null;
+    }
+
+    return data[0];
+  } catch (error) {
+    console.error("Error fetching profile data:", error);
+    return null;
   }
 }
