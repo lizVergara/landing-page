@@ -24,7 +24,6 @@ const ModalWeather: React.FC<ModalWeatherProps> = ({ onClose }) => {
       try {
         const response = await fetch(`/api/location?query=${queryValue}`);
         const data: Location[] = await response.json();
-        console.log(data);
         setResults(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -49,7 +48,7 @@ const ModalWeather: React.FC<ModalWeatherProps> = ({ onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="text-white-text bg-transparent hover:bg-gray-200 hover:text-modal-bg rounded-lg text-sm w-4 h-4 ms-auto inline-flex justify-center items-center"
+              className="text-white-text bg-transparent hover:bg-gray-200 hover:text-modal-bg rounded-lg text-sm w-4 h-4 ms-auto focus:ring-0 focus:outline-none inline-flex justify-center items-center"
             >
               <CloseIcon />
             </button>
@@ -69,7 +68,7 @@ const ModalWeather: React.FC<ModalWeatherProps> = ({ onClose }) => {
             </div>
             <button
               type="button"
-              className=" mt-2 inline-flex items-center text-black bg-button-color hover:bg-yellow-600 focus:ring-4 focus:outline-none font-bold rounded-lg text-sm px-3 py-2.5 text-center"
+              className=" mt-2 inline-flex items-center text-black bg-button-color hover:bg-yellow-600 focus:ring-0 focus:outline-none font-bold rounded-lg text-sm px-3 py-2.5 text-center"
               onClick={() => {
                 if (tempLocation !== null) {
                   dispatch(setLocation(tempLocation));

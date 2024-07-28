@@ -1,5 +1,6 @@
 "use client";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../../app/store/hooks";
+
 import {
   setName,
   setLastName,
@@ -10,23 +11,30 @@ import {
   setSameBillingInfo,
   selectLocation,
   selectProfile,
+  selectLoading,
 } from "../../features/profile/profileSlice";
-import InboxImage from "../../../../public/icons/inboxSvg";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import ModalWeather from "../ModalWeather";
 import { useAppSelector } from "../../store/hooks";
 import LocationIcon from "../../../../public/icons/locationSvg";
-import { createProfile } from "@/services/addUserService";
 import CheckboxField from "./CheckboxField";
 import FileUpload from "./FileUpload";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
+import { createProfileThunk } from "@/app/features/profile/profileThunks";
+import Loading from "./loading";
+import { useRouter } from "next/navigation";
+import ModalLogin from "../ModalLogin";
 
 const ProfileForm: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const profile = useAppSelector(selectProfile);
   const location = useAppSelector(selectLocation);
-
+  const isLoading = useAppSelector(selectLoading);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [images, setImages] = useState<File[]>([]);
@@ -66,21 +74,31 @@ const ProfileForm: React.FC = () => {
     event.preventDefault();
     if (!validateForm()) return;
 
-    const formData = new FormData();
-    Object.entries(profile).forEach(([key, value]) => {
-      formData.append(key, value as string);
-    });
-    images.forEach((image, index) => {
-      formData.append(`files`, image);
-    });
+    setShowLoading(true);
+    setTimeout(async () => {
+      const formData = new FormData();
+      Object.entries(profile).forEach(([key, value]) => {
+        if (key === "location") {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value as string);
+        }
+      });
+      images.forEach((image, index) => {
+        formData.append(`files`, image);
+      });
 
-    try {
-      const result = await createProfile(formData);
-      console.log(result);
-    } catch (error) {
-      console.error(error);
-    }
+      const resultAction = await dispatch(createProfileThunk(formData));
+      if (createProfileThunk.fulfilled.match(resultAction)) {
+        setIsRedirecting(true);
+        router.push(`/user/${profile.name}`);
+      }
+    }, 2000);
   };
+
+  if (isLoading || isRedirecting) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -101,14 +119,22 @@ const ProfileForm: React.FC = () => {
               id="name"
               value={profile.name}
               error={errors.name}
-              onChange={(e) => dispatch(setName(e.target.value))}
+              onChange={(e) => {
+                if (/^[a-zA-Z\s]*$/.test(e.target.value)) {
+                  dispatch(setName(e.target.value));
+                }
+              }}
             />
             <InputField
               label="Apellido"
               id="lastName"
               value={profile.lastName}
               error={errors.lastName}
-              onChange={(e) => dispatch(setLastName(e.target.value))}
+              onChange={(e) => {
+                if (/^[a-zA-Z\s]*$/.test(e.target.value)) {
+                  dispatch(setLastName(e.target.value));
+                }
+              }}
             />
             <SelectField
               label="Tipo de documento"
@@ -123,7 +149,11 @@ const ProfileForm: React.FC = () => {
               id="document"
               value={profile.document || ""}
               error={errors.document}
-              onChange={(e) => dispatch(setDocument(e.target.value))}
+              onChange={(e) => {
+                if (/^[0-9]*$/.test(e.target.value)) {
+                  dispatch(setDocument(e.target.value));
+                }
+              }}
             />
             <InputField
               label="Correo electrónico"
@@ -147,8 +177,11 @@ const ProfileForm: React.FC = () => {
                 label="Número de teléfono"
                 id="phoneNumber"
                 value={profile.phoneNumber}
-                // error={errors.phoneNumber}
-                onChange={(e) => dispatch(setPhoneNumber(e.target.value))}
+                onChange={(e) => {
+                  if (/^\+?[0-9]*$/.test(e.target.value)) {
+                    dispatch(setPhoneNumber(e.target.value));
+                  }
+                }}
               />
             </div>
             <div className="flex flex-auto space-x-2 justify-between">
@@ -177,6 +210,9 @@ const ProfileForm: React.FC = () => {
                 handleFileChange={handleFileChange}
                 handleRemoveImage={handleRemoveImage}
                 error={errors.images}
+                isLoginModalOpen={isLoginModalOpen}
+                isLoading={showLoading}
+                isRedirecting={isRedirecting}
               />
             </div>
           </form>
@@ -192,13 +228,27 @@ const ProfileForm: React.FC = () => {
             <button
               type="submit"
               className="mt-6 w-full inline-flex justify-center py-4 px-4 border-0 border-transparent shadow-sm text-sm font-bold rounded-md text-black bg-button-color hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+              onClick={handleSubmit}
             >
               Enviar
             </button>
+
+            <p
+              className="mt-4 text-center text-white underline cursor-pointer"
+              onClick={() => setIsLoginModalOpen(true)}
+            >
+              Ya tienes cuenta, ingresa para ver tu información
+            </p>
           </div>
         </div>
       </div>
       {isModalOpen && <ModalWeather onClose={() => setIsModalOpen(false)} />}
+      {isLoginModalOpen && (
+        <ModalLogin
+          setIsRedirecting={setIsRedirecting}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
+      )}
     </>
   );
 };

@@ -3,10 +3,9 @@ export interface Profile {
   name: string;
   lastName: string;
   documentType: string;
-  document: string | null;
+  document: string;
   email: string;
   phoneNumber: string;
   sameBillingInfo: boolean;
   location: Location | null;
-  // images: File[];
 }

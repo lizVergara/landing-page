@@ -14,35 +14,29 @@ const s3Client = new S3Client({
   },
 });
 
-// export async function uploadFileToS3(file: any, fileName: string) {
-//     try {
-//         const command = new PutObjectCommand({
-//             Bucket: process.env.AWS_BUCKET_NAME,
-//             Key: fileName,
-//             Body: file,
-//         });
-
-//         const response = await s3Client.send(command);
-//         return response;
-//     } catch (error) {
-//         console.error("Error uploading file to S3:", error);
-//         return null;
-//     }
-// }
-
-export async function uploadFileToS3(file: any, fileName: string) {
+export async function uploadFileToS3(
+  file: any,
+  fileName: string,
+  fileType: string
+) {
   try {
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: fileName,
       Body: file,
+      ContentType: fileType,
     });
 
     const response = await s3Client.send(command);
     if (response) {
-      const url = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${fileName}`;
-      console.log("File uploaded to S3:", url);
-      return response;
+      const getObjectParams = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: fileName,
+      });
+      const url = await getSignedUrl(s3Client, getObjectParams, {
+        expiresIn: 50000,
+      });
+      return url;
     }
     return null;
   } catch (error) {
@@ -59,7 +53,7 @@ export async function retrieveFileFromS3(fileName: string) {
     });
 
     const url = await getSignedUrl(s3Client, command, { expiresIn: 300 });
-    console.log("url", url);
+
     return url;
   } catch (error) {
     console.error("Error retrieving file from S3:", error);

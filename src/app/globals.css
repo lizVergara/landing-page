@@ -32,3 +32,26 @@ input {
 body {
   @apply bg-custom-bg text-white;
 }
+@keyframes loading {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.loading-animation {
+  animation: loading 2s infinite linear;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    #22d3ee,
+    #ec4899,
+    #a855f7,
+    #fb923c
+  ); /* Colores pastel */
+}

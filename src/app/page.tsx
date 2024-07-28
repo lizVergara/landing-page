@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import ProfileForm from "./components/form/ProfileForm";
+import Challenge from "./components/main";
 
 const Home: React.FC = () => {
   const [showUpload, setShowUpload] = useState(false);
@@ -24,14 +25,7 @@ const Home: React.FC = () => {
           className="flex items-center justify-center min-h-screen w-full"
           onClick={handleClick}
         >
-          <main className="text-center p-4 cursor-pointer">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-normal text-slate-400">
-              Challenge
-            </h1>
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light mt-4">
-              TRD
-            </h2>
-          </main>
+          <Challenge />
         </motion.div>
       ) : (
         <motion.div

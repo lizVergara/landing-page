@@ -4,8 +4,8 @@ const InfoRow: React.FC<InfoRowProps> = ({ label, value, flag }) => {
   return (
     <div className="flex-col justify-between items-center border border-input-bg p-2 rounded-lg">
       <h2 className="font-light text-secondary ">{label}</h2>
-      <span className="flex items-center space-x-2">
-        <span>{value}</span>
+      <span className="flex text-white-text items-center space-x-2">
+        <p>{value}</p>
       </span>
     </div>
   );
@@ -37,7 +37,7 @@ export const InfoContainer: React.FC<InfoContainerProps> = ({
         <div className="flex-col w-full justify-between items-center border border-input-bg p-2 rounded-lg">
           <h2 className="font-light text-secondary ">Número de teléfono</h2>
           <span className="flex items-center space-x-2">
-            <span>{telefono}</span>
+            <p>{telefono}</p>
           </span>
         </div>
       </div>

@@ -2,20 +2,16 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Location } from "../location/Location";
 import { RootState } from "@/app/store";
 import { Profile } from "./Profile";
+import { createProfileThunk, fetchUserProfile } from "./profileThunks";
 
-// interface ProfileState {
-//   name: string;
-//   lastName: string;
-//   documentType: string;
-//   document: string | null;
-//   email: string;
-//   phoneNumber: string;
-//   sameBillingInfo: boolean;
-//   location: Location | null;
-//   // images: File[];
-// }
+interface ProfileState extends Profile {
+  images: string[];
+  loading: boolean;
+  error: string | null;
+  temperature: string;
+}
 
-const initialState: Profile = {
+const initialState: ProfileState = {
   name: "",
   lastName: "",
   documentType: "RUC",
@@ -24,13 +20,17 @@ const initialState: Profile = {
   phoneNumber: "",
   sameBillingInfo: false,
   location: null,
-  // images: [],
+  images: [],
+  loading: false,
+  error: null,
+  temperature: "",
 };
 
 const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
+    reset: () => initialState,
     setName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
     },
@@ -53,17 +53,62 @@ const profileSlice = createSlice({
       state.sameBillingInfo = action.payload;
     },
     setLocation: (state, action: PayloadAction<Location>) => {
-      console.log(action.payload);
       state.location = action.payload;
     },
-    // setImages: (state, action: PayloadAction<File[]>) => {
-    //   state.images = action.payload;
-    // },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(createProfileThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createProfileThunk.fulfilled, (state, action) => {
+        state.name = action.payload.profile.nombre;
+        state.lastName = action.payload.profile.apellido;
+        state.documentType = action.payload.profile.tipo_documento;
+        state.document = action.payload.profile.documento;
+        state.email = action.payload.profile.correo;
+        state.phoneNumber = action.payload.profile.telefono;
+        state.sameBillingInfo = action.payload.profile.bill_info;
+        state.location = action.payload.profile.location_id;
+        state.images = action.payload.images;
+        state.temperature = action.payload.wheather.temperature;
+        state.loading = false;
+      })
+      .addCase(createProfileThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        const result = action.payload.result;
+        state.name = result.nombre;
+        state.lastName = result.apellido;
+        state.documentType = result.tipo_documento;
+        state.document = result.documento;
+        state.email = result.correo;
+        state.phoneNumber = result.telefono;
+        state.sameBillingInfo = result.bill_info;
+        state.location = result.trd_location;
+        state.images = result.images;
+        state.temperature = action.payload.wheather.temperature;
+
+        state.loading = false;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
 export const selectLocation = (state: RootState) => state.profile.location;
 export const selectProfile = (state: RootState) => state.profile;
+export const selectImages = (state: RootState) => state.profile.images;
+export const selectLoading = (state: RootState) => state.profile.loading;
 
 export const {
   setName,
@@ -74,7 +119,6 @@ export const {
   setPhoneNumber,
   setSameBillingInfo,
   setLocation,
-  // setImages,
 } = profileSlice.actions;
 
 export default profileSlice.reducer;

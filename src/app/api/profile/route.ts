@@ -6,6 +6,7 @@ import {
 } from "./services";
 import { getOrCreateLocation } from "../location/services";
 import { uploadFileToS3 } from "@/app/utils/s3";
+import { getWeatherData } from "../weather/services";
 
 export async function POST(req: NextRequest) {
   const Formdata = await req.formData();
@@ -47,15 +48,19 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-
   const files = Formdata.getAll("files");
 
+  let filesUploaded = [];
   if (files.length > 0) {
-    console.log("Files to upload", files);
-    const filesUploaded = await sendAllFiles(files, result.id);
+    filesUploaded = await sendAllFiles(files, result.id);
   }
+  const wheather = await getWeatherData(location.latitude, location.longitude);
 
-  return NextResponse.json(result);
+  return NextResponse.json({
+    profile: result,
+    images: filesUploaded,
+    wheather: wheather,
+  });
 }
 
 export async function GET(req: NextRequest) {
@@ -77,35 +82,19 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json(profileData);
 }
-// async function sendAllFiles(files: any, userId: string) {
-//   const promises = files.map(async (file: any) => {
-//     const buffer = Buffer.from(await file.arrayBuffer());
-//     const fileName = `${userId}_${file.name}`; // Concatenar userId y file.name
-
-//     const uploadResponse = await uploadFileToS3(buffer, fileName);
-//     console.log("Upload response", uploadResponse);
-//     if (!uploadResponse) {
-//       return null;
-//     }
-
-//     await saveProfileImage(fileName, file.type, userId);
-//   });
-
-//   return await Promise.all(promises);
-// }
 async function sendAllFiles(files: any, userId: string) {
   const promises = files.map(async (file: any) => {
     const buffer = Buffer.from(await file.arrayBuffer());
     const fileName = `${userId}_${file.name}`;
 
-    const uploadResponse = await uploadFileToS3(buffer, fileName);
-    console.log("Upload response", uploadResponse);
+    const uploadResponse = await uploadFileToS3(buffer, fileName, file.type);
+
     if (!uploadResponse) {
       return null;
     }
 
     await saveProfileImage(fileName, file.type, userId);
-    // return uploadResponse;
+    return uploadResponse;
   });
 
   return await Promise.all(promises);
