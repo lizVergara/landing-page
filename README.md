@@ -31,8 +31,6 @@ yarn
 **Variables de Entorno**
 Antes de ejecutar la aplicación, asegúrate de configurar las siguientes variables de entorno en un archivo .env.local en la raíz del proyecto
 
-**Este archivo no debe ser incluido en el control de versiones por razones de seguridad. Asegúrate de añadir .env.local a tu archivo .gitignore.**
-
 ### Ejecutar la Aplicación
 
 Para iniciar la aplicación en modo desarrollo, ejecuta:
