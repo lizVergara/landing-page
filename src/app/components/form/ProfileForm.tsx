@@ -227,7 +227,7 @@ const ProfileForm: React.FC = () => {
             />
             <button
               type="submit"
-              className="mt-6 w-full inline-flex justify-center py-4 px-4 border-0 border-transparent shadow-sm text-sm font-bold rounded-md text-black bg-button-color hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+              className="mt-6 w-full inline-flex justify-center py-4 px-4 border-0 border-transparent shadow-sm text-sm font-bold rounded-md text-black bg-button-color hover:bg-yellow-600 focus:outline-none focus:ring-0 focus:ring-offset-2 focus:ring-yellow-500"
               onClick={handleSubmit}
             >
               Enviar
